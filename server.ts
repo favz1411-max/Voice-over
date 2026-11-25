@@ -4,24 +4,27 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { GoogleGenAI } from '@google/genai';
-import { STUDIO_VOICES } from './src/data/studioCatalog';
-import type { DialogueTtsPayload, SingleTtsPayload, VoiceName } from './src/types/voiceover';
+import { STUDIO_VOICES } from './src/data/studioCatalog.ts';
+import type { DialogueTtsPayload, SingleTtsPayload, VoiceName } from './src/types/voiceover.ts';
 import {
   base64ToUint8Array,
   extractWaveformPeaksFromWav,
   parseWavHeader,
-} from './src/utils/audioLogic';
+} from './src/utils/audioLogic.ts';
 import {
   VALID_VOICES,
   validateDialogueTtsPayload,
   validateSingleTtsPayload,
-} from './src/utils/scriptLogic';
+} from './src/utils/scriptLogic.ts';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 const PORT = Number(process.env.PORT) || 3000;
-const IS_PROD = process.env.NODE_ENV === 'production';
+const DIST_INDEX = path.resolve(__dirname, 'dist', 'index.html');
+const IS_PROD =
+  process.env.NODE_ENV === 'production' ||
+  (fs.existsSync(DIST_INDEX) && process.env.npm_lifecycle_event !== 'dev');
 
 function getGeminiClient(): GoogleGenAI {
   const apiKey = process.env.GEMINI_API_KEY?.trim();
